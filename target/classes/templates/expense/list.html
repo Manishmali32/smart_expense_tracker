@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Expenses — Smart Expense Tracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body class="app-body">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+ <div class="container-fluid px-4 py-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h4 class="page-title mb-1">All Expenses</h4>
+      <p class="page-subtitle mb-0">
+        <span th:text="${expenses.size()}">0</span> records
+        <span th:if="${selectedCategory != null and !selectedCategory.isEmpty() and selectedCategory != 'All'}">
+          · filtered by <span class="text-accent fw-semibold" th:text="${selectedCategory}"></span>
+        </span>
+      </p>
+    </div>
+    <a th:href="@{/expenses/new}" class="btn btn-primary btn-add">
+      <i class="bi bi-plus-lg me-2"></i>Add Expense
+    </a>
+  </div>
+
+  <!-- Flash messages -->
+  <div th:if="${successMessage}"
+       class="alert alert-success alert-dismissible d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-check-circle-fill"></i><span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${errorMessage}"
+       class="alert alert-danger alert-dismissible d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-exclamation-triangle-fill"></i><span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <!-- Filter pills -->
+  <div class="card app-card mb-4">
+    <div class="card-body py-3">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="small fw-medium text-muted me-1"><i class="bi bi-funnel me-1"></i>Filter:</span>
+        <a th:href="@{/expenses}" class="filter-pill"
+           th:classappend="${selectedCategory == null or #strings.isEmpty(selectedCategory) or selectedCategory == 'All'} ? 'filter-pill-active'">
+          All
+        </a>
+        <a th:each="cat : ${categories}"
+           th:href="@{/expenses(category=${cat})}"
+           class="filter-pill"
+           th:classappend="${cat == selectedCategory} ? 'filter-pill-active'"
+           th:text="${cat}">Cat</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary strip -->
+  <div class="summary-strip mb-4">
+    <div class="summary-item">
+      <i class="bi bi-wallet2 me-2 text-accent"></i>
+      <span class="small text-muted me-1">Total:</span>
+      <span class="fw-semibold">
+        ₹<span th:text="${#numbers.formatDecimal(totalExpenses,1,'COMMA',2,'POINT')}">0.00</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Table card -->
+  <div class="card app-card">
+    <div class="card-body p-0">
+
+      <!-- Empty state -->
+      <div th:if="${expenses.isEmpty()}" class="empty-state py-5">
+        <i class="bi bi-receipt empty-icon"></i>
+        <p class="empty-title">No expenses found</p>
+        <p class="empty-subtitle"
+           th:text="${selectedCategory != null and !selectedCategory.isEmpty() and selectedCategory != 'All'}
+                    ? 'No expenses in this category.'
+                    : 'You haven\'t added any expenses yet.'">
+        </p>
+        <a th:href="@{/expenses/new}" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-lg me-1"></i>Add First Expense
+        </a>
+      </div>
+
+      <!-- Table -->
+      <div th:if="${!expenses.isEmpty()}" class="table-responsive">
+        <table class="table app-table mb-0">
+          <thead>
+            <tr>
+              <th>#</th><th>Title</th><th>Category</th>
+              <th>Date</th><th>Notes</th>
+              <th class="text-end">Amount</th><th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="exp, s : ${expenses}">
+              <td class="text-muted small" th:text="${s.count}">1</td>
+              <td><span class="expense-title" th:text="${exp.title}">Title</span></td>
+              <td>
+                <span class="category-badge"
+                      th:text="${exp.category}"
+                      th:classappend="'cat-'+${exp.category.toLowerCase()}"></span>
+              </td>
+              <td class="text-muted small">
+                <i class="bi bi-calendar3 me-1"></i>
+                <span th:text="${#temporals.format(exp.expenseDate,'dd MMM yyyy')}">Date</span>
+              </td>
+              <td class="text-muted small">
+                <span th:if="${exp.notes != null and !exp.notes.isEmpty()}"
+                      th:text="${#strings.abbreviate(exp.notes,35)}"
+                      data-bs-toggle="tooltip" th:attr="title=${exp.notes}"></span>
+                <span th:unless="${exp.notes != null and !exp.notes.isEmpty()}">—</span>
+              </td>
+              <td class="text-end fw-semibold amount-cell">
+                ₹<span th:text="${#numbers.formatDecimal(exp.amount,1,'COMMA',2,'POINT')}">0</span>
+              </td>
+              <td class="text-center">
+                <div class="d-flex gap-1 justify-content-center">
+                  <a th:href="@{/expenses/{id}/edit(id=${exp.id})}"
+                     class="btn btn-xs btn-outline-primary" title="Edit">
+                    <i class="bi bi-pencil-fill"></i>
+                  </a>
+                  <form th:action="@{/expenses/{id}/delete(id=${exp.id})}"
+                        method="post" class="d-inline">
+                    <button type="submit" class="btn btn-xs btn-outline-danger" title="Delete"
+                            onclick="return confirm('Delete this expense?')">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="text-end fw-semibold text-muted">Grand Total</td>
+              <td class="text-end fw-bold amount-cell text-accent">
+                ₹<span th:text="${#numbers.formatDecimal(totalExpenses,1,'COMMA',2,'POINT')}">0</span>
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+</script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

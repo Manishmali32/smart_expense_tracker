@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title th:text="${pageTitle} + ' — Smart Expense Tracker'">Expense Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body class="app-body">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-wrapper">
+ <div class="container-fluid px-4 py-4">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb app-breadcrumb">
+      <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a th:href="@{/expenses}">Expenses</a></li>
+      <li class="breadcrumb-item active" th:text="${pageTitle}">Form</li>
+    </ol>
+  </nav>
+
+  <div class="mb-4">
+    <h4 class="page-title mb-1" th:text="${pageTitle}">Expense</h4>
+    <p class="page-subtitle mb-0">Fill in the details below.</p>
+  </div>
+
+  <div class="row justify-content-center">
+   <div class="col-12 col-lg-8 col-xl-6">
+    <div class="card app-card">
+     <div class="card-header app-card-header d-flex align-items-center gap-2">
+       <i class="bi bi-receipt text-accent"></i>
+       <span class="fw-semibold" th:text="${pageTitle}">Expense Details</span>
+     </div>
+     <div class="card-body p-4">
+
+      <!--
+        th:action dynamically points to /expenses/new (add) or /expenses/{id}/edit (update).
+        th:object="${expense}" binds the form to the Expense entity.
+      -->
+      <form th:action="${expense.id == null} ? @{/expenses/new} : @{/expenses/{id}/edit(id=${expense.id})}"
+            method="post"
+            th:object="${expense}"
+            novalidate>
+
+        <!-- Title -->
+        <div class="mb-4">
+          <label for="title" class="form-label fw-medium">
+            <i class="bi bi-pencil-square me-1 text-accent"></i>Title <span class="text-danger">*</span>
+          </label>
+          <input type="text" id="title" th:field="*{title}"
+                 class="form-control app-input"
+                 th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"
+                 placeholder="e.g. Dinner at restaurant"
+                 maxlength="100" required autofocus/>
+          <div class="invalid-feedback"
+               th:if="${#fields.hasErrors('title')}"
+               th:errors="*{title}"></div>
+        </div>
+
+        <!-- Amount -->
+        <div class="mb-4">
+          <label for="amount" class="form-label fw-medium">
+            <i class="bi bi-currency-rupee me-1 text-accent"></i>Amount <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text app-input-addon">₹</span>
+            <input type="number" id="amount" th:field="*{amount}"
+                   class="form-control app-input"
+                   th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid'"
+                   placeholder="0.00" step="0.01" min="0.01" required/>
+            <div class="invalid-feedback"
+                 th:if="${#fields.hasErrors('amount')}"
+                 th:errors="*{amount}"></div>
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="mb-4">
+          <label for="category" class="form-label fw-medium">
+            <i class="bi bi-tag me-1 text-accent"></i>Category <span class="text-danger">*</span>
+          </label>
+          <select id="category" th:field="*{category}"
+                  class="form-select app-input"
+                  th:classappend="${#fields.hasErrors('category')} ? 'is-invalid'"
+                  required>
+            <option value="">— Select a category —</option>
+            <option th:each="cat : ${categories}"
+                    th:value="${cat}"
+                    th:text="${cat}">Category</option>
+          </select>
+          <div class="invalid-feedback"
+               th:if="${#fields.hasErrors('category')}"
+               th:errors="*{category}"></div>
+        </div>
+
+        <!-- Date -->
+        <div class="mb-4">
+          <label for="expenseDate" class="form-label fw-medium">
+            <i class="bi bi-calendar3 me-1 text-accent"></i>Date <span class="text-danger">*</span>
+          </label>
+          <input type="date" id="expenseDate" th:field="*{expenseDate}"
+                 class="form-control app-input"
+                 th:classappend="${#fields.hasErrors('expenseDate')} ? 'is-invalid'"
+                 required/>
+          <div class="invalid-feedback"
+               th:if="${#fields.hasErrors('expenseDate')}"
+               th:errors="*{expenseDate}"></div>
+        </div>
+
+        <!-- Notes (optional) -->
+        <div class="mb-4">
+          <label for="notes" class="form-label fw-medium">
+            <i class="bi bi-chat-left-text me-1 text-accent"></i>Notes
+            <span class="text-muted small">(optional)</span>
+          </label>
+          <textarea id="notes" th:field="*{notes}"
+                    class="form-control app-input"
+                    rows="3"
+                    placeholder="Any additional details..."></textarea>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-3 justify-content-end pt-2">
+          <a th:href="@{/expenses}" class="btn btn-outline-secondary px-4">
+            <i class="bi bi-x-lg me-1"></i>Cancel
+          </a>
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-check-lg me-1"></i>
+            <span th:text="${expense.id == null} ? 'Save Expense' : 'Update Expense'">Save</span>
+          </button>
+        </div>
+
+      </form>
+     </div>
+    </div>
+   </div>
+  </div>
+
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Default date to today for new expense forms
+  const dateInput = document.getElementById('expenseDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split('T')[0];
+  }
+</script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
