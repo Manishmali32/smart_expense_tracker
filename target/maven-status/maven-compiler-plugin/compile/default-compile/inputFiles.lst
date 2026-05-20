@@ -1,0 +1,16 @@
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\config\SecurityConfig.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\controller\AuthController.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\controller\DashboardController.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\controller\ExpenseController.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\controller\IncomeController.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\entity\Expense.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\entity\Income.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\entity\User.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\ExpenseTrackerApplication.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\repository\ExpenseRepository.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\repository\IncomeRepository.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\repository\UserRepository.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\service\CustomUserDetailsService.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\service\ExpenseService.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\service\IncomeService.java
+C:\Backend_intern\smart-expense\smart-expense-tracker-fixed\src\main\java\com\example\expensetracker\service\UserService.java
