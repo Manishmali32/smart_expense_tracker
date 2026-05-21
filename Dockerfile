@@ -1,11 +1,11 @@
-FROM maven:3.9.6-eclipse-temurin-17
+    FROM eclipse-temurin:21-jdk
 
-WORKDIR /app
+    WORKDIR /app
 
-COPY . .
+    COPY . .
 
-RUN mvn clean install -DskipTests=true
+    RUN mvn clean package -DskipTests
 
-EXPOSE 8080
+    EXPOSE 8080
 
-CMD ["java", "-jar", "target/*.jar"]
+    CMD ["java", "-jar", "target/expensetracker-0.0.1-SNAPSHOT.jar"]
